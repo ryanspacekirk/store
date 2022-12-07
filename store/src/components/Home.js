@@ -1,5 +1,6 @@
 import { Paper, Container, Box, Typography, Button, Stack, Modal, TextField } from "@mui/material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { NavLink, useNavigate, Navigate } from "react-router-dom";
 
 
 const handleLogin = (setLoginModalOpen) => {
@@ -21,6 +22,7 @@ const handleLoginSubmit = (setVerifiedUser, username, password, setLoginModalOpe
     if(validLogin(username, password)){//succesful login
         setVerifiedUser(true);
         setLoginModalOpen(false);
+        
 
     }
     else{//bad login attempt
@@ -54,12 +56,23 @@ const loginStyle = {
 
 
 const Home = () => {
+    const navigate = useNavigate();
     const [loginModalOpen, setLoginModalOpen] = useState(false);
     const handleClose = () => setLoginModalOpen(false);
 
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [verifiedUser, setVerifiedUser] = useState(false);
+
+    useEffect(() => {
+        console.log('USE EFFECT TRIGGERED');
+        console.log('Use Effect Value:', verifiedUser);
+
+        if(verifiedUser){
+            navigate('/InventoryManager');
+        }
+
+    }, [verifiedUser]);
 
     return(
         <Container>
