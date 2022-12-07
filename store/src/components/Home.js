@@ -1,6 +1,7 @@
 import { Paper, Container, Box, Typography, Button, Stack, Modal, TextField } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { NavLink, useNavigate, Navigate } from "react-router-dom";
+import { Context } from '../App.js';
 import Guest from "./Guest";
 import axios from 'axios';
 
@@ -19,14 +20,15 @@ const handleGuest = (setGuestUser) => {
 
 }
 
-const handleLoginSubmit = async(setVerifiedUser, username, password, setLoginModalOpen) => {
+const handleLoginSubmit = async(setVerifiedUser, username, password, setLoginModalOpen, setLoggedInUser) => {
     console.log("Login Submit Clicked ");
     console.log('Account UserName: ', username);
     console.log('Account Password: ', password);
     
-    if(await validLogin(username, password)){//succesful login
+    if(await validLogin(username, password, setLoggedInUser)){//succesful login
         setVerifiedUser(true);
         setLoginModalOpen(false);
+        
         
 
     }
@@ -40,7 +42,7 @@ const handleLoginSubmit = async(setVerifiedUser, username, password, setLoginMod
 
 }
 
-const validLogin = async(usernameInput, passwordInput) => {
+const validLogin = async(usernameInput, passwordInput, setLoggedInUser) => {
     console.log('Username value in ValidLogin: ', usernameInput)
     
     let usernameResponse = await axios.get('http://localhost:8081/login',  {
@@ -50,8 +52,9 @@ const validLogin = async(usernameInput, passwordInput) => {
         }
     });
     
-    console.log('Response from Server:', usernameResponse.data);
+    console.log('Response from Server:', usernameResponse.data[0]);
     if(usernameResponse.data.length !== 0 ){// A user account exits!
+        setLoggedInUser(usernameResponse.data[0]);
         return true;
     }
     else {
@@ -72,6 +75,7 @@ const loginStyle = {
 
 
 const Home = () => {
+    const { loggedInUser, setLoggedInUser } = useContext(Context);
     const navigate = useNavigate();
     const [loginModalOpen, setLoginModalOpen] = useState(false);
     const handleClose = () => setLoginModalOpen(false);
@@ -128,7 +132,7 @@ const Home = () => {
                     <Stack justifyContent="center" spacing={2}>
                         <TextField onChange={(e) => {setUsername(e.target.value)}} id="username" variant="outlined" label="Username" />
                         <TextField onChange={(e) => {setPassword(e.target.value)}} id="password" variant="outlined" label="Password" />
-                        <Button onClick={(e) => handleLoginSubmit(setVerifiedUser, username, password, setLoginModalOpen)} variant="contained" >SUBMIT</Button>
+                        <Button onClick={(e) => handleLoginSubmit(setVerifiedUser, username, password, setLoginModalOpen, setLoggedInUser)} variant="contained" >SUBMIT</Button>
 
                     </Stack>
 
@@ -153,6 +157,11 @@ const Home = () => {
                     {verifiedUser ? <Typography variant="h4"> User Is Validated</Typography>
                     :
                     <Typography variant="h4"> User Is NOT Validated</Typography>}
+
+                    <Typography variant="h4">
+                        Validated user {loggedInUser.first_name}
+                    </Typography>
+                    
                     
                     
                     
