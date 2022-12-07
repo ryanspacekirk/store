@@ -23,6 +23,8 @@ app.get('/', (req, res) =>{
 
 })
 
+//--------------------app.get for login---------------------------------------------------------------------------------
+
 app.get('/login', async(req, res) => {//Called When a user tries to log in.
     console.log('--Login attempted--');
     console.log(req.query);
@@ -86,8 +88,9 @@ app.get('/login', async(req, res) => {//Called When a user tries to log in.
 
     
 
-})
+});//-----------------------------------------------------------------------------------------------------------------------
 
+//---------------app.post for account creation---------------------------------------------------------------------------------
 app.post('/createAccount', async(req, res) => {
     console.log('--User account creation attempted--');
     console.log(req.query);
@@ -142,4 +145,22 @@ app.post('/createAccount', async(req, res) => {
     res.status(200).send(createdAccount);
 
 
-})
+});//-----------------------------------------------------------------------------------------------------------------------
+
+
+
+//----------app.get for items-------------------------------------------------------------------------------------------
+
+app.get('/items', async(req, res) => {
+    console.log('Requested items from server');
+    let itemList;
+    
+    try{
+        itemsList = await knex.from('item').select('*');
+        console.log('Items List:', itemsList);
+
+    } catch (e){
+
+    }
+    res.status(200).send(itemsList);
+});//-----------------------------------------------------------------------------------------------------------------------
