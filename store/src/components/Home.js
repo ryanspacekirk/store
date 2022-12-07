@@ -19,6 +19,11 @@ const handleGuest = (setGuestUser) => {
 
 
 }
+const handleCreateAccount = (setCreateModalOpen) => {
+    console.log("Create Account Button Clicked");
+    setCreateModalOpen(true);
+
+}
 
 const handleLoginSubmit = async(setVerifiedUser, username, password, setLoginModalOpen, setLoggedInUser) => {
     console.log("Login Submit Clicked ");
@@ -38,6 +43,18 @@ const handleLoginSubmit = async(setVerifiedUser, username, password, setLoginMod
     }
 
 
+
+
+}
+
+const handleAccountSubmit = async (accountFirstName, accountLastName, accountUsername, accountPassword) => {
+    console.log('New Account information:', accountFirstName, accountLastName, accountUsername, accountPassword);
+    if(await accountCreation(accountFirstName, accountLastName, accountUsername, accountPassword)){//account creation was a success
+
+    }
+    else {//account creation failed
+
+    }
 
 
 }
@@ -63,6 +80,18 @@ const validLogin = async(usernameInput, passwordInput, setLoggedInUser) => {
 
 }
 
+const accountCreation = async(accountFirstName, accountLastName, accountUsername, accountPassword) => {
+    let accountCreationResponse = await axios.post('http://localhost:8081/createAccount', {
+        first_name:accountFirstName,
+        last_name:accountLastName,
+        username:accountUsername,
+        password:accountPassword
+
+    } );
+
+
+}
+
 const loginStyle = {
     
     postion: 'absolute',
@@ -78,12 +107,22 @@ const Home = () => {
     const { loggedInUser, setLoggedInUser } = useContext(Context);
     const navigate = useNavigate();
     const [loginModalOpen, setLoginModalOpen] = useState(false);
-    const handleClose = () => setLoginModalOpen(false);
+    const handleCloseLogin = () => setLoginModalOpen(false);
+
+    const [createModalOpen, setCreateModalOpen] = useState(false);
+    const handleCloseAccount = () => setCreateModalOpen(false);
 
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [verifiedUser, setVerifiedUser] = useState(false);
     const [guestUser, setGuestUser] = useState(false);
+
+    const [accountFirstName, setAccountFirstName] = useState("");
+    const [accountLastName, setAccountLasttName] = useState("");
+    const [accountUsername, setAccountUsername] = useState("");
+    const [accountPassword, setAccountPassword] = useState("");
+
+
 
     useEffect(() => {
         console.log('USE EFFECT TRIGGERED');
@@ -120,10 +159,10 @@ const Home = () => {
                     </Typography>
 
                 </Box>
-
+                {/* First modal is for log in */}
                 <Modal
                     open={loginModalOpen}
-                    onClose={handleClose}
+                    onClose={handleCloseLogin}
                 >
                     <Box sx={loginStyle}>
                     <Typography variant="h6">
@@ -141,11 +180,38 @@ const Home = () => {
 
                 </Modal>
 
+                {/* Second Modal modal is for account creation */}
+                <Modal
+                    open={createModalOpen}
+                    onClose={handleCloseAccount}
+                >
+                    <Box sx={loginStyle}>
+                    <Typography variant="h6">
+                        Create an account below
+                    </Typography>
+                    <Stack justifyContent="center" spacing={2}>
+                        <TextField onChange={(e) => {setAccountFirstName(e.target.value)}} id="accountFirstName" variant="outlined" label="First Name" />
+                        <TextField onChange={(e) => {setAccountLasttName(e.target.value)}} id="accountLastName" variant="outlined" label="Last Name" />
+                        <TextField onChange={(e) => {setAccountUsername(e.target.value)}} id="accountUsername" variant="outlined" label="Username" />
+                        <TextField onChange={(e) => {setAccountPassword(e.target.value)}} id="accountPassword" variant="outlined" label="Password" />
+                        <Button onClick={(e) => handleAccountSubmit(accountFirstName, accountLastName, accountUsername, accountPassword)} variant="contained" >SUBMIT</Button>
+
+                    </Stack>
+
+
+                    </Box>
+
+                </Modal>
+
+                
+
+
 
                 <Box >
                     <Stack justifyContent="center" direction="row" spacing={2}>
                         <Button onClick={(e) => handleLogin(setLoginModalOpen)} variant="contained"> LOGIN </Button>
                         <Button onClick={(e) => handleGuest(setGuestUser)} variant="contained"> GUEST </Button>
+                        <Button onClick={(e) => handleCreateAccount(setCreateModalOpen)} variant="contained"> CREATE ACCOUNT</Button>
 
                     </Stack>
                     
