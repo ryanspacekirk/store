@@ -6,6 +6,10 @@ const router = express.Router()
 const cors = require('cors');
 const port = 8081;
 const knex = require('knex')(require('./knexfile')["development"]);
+const bcrypt = require("bcrypt");
+
+const saltRounds = 10; 
+const { hash, compare } = bcrypt;
 
 app.use(express.json());
 app.use(cors());
@@ -25,20 +29,62 @@ app.get('/login', async(req, res) => {//Called When a user tries to log in.
     console.log('Login username', req.query.username );
     console.log('Login password', req.query.password );
     let userAccount;
+    let verifedAccount = false;
+
+    const validateHash = async (storedHash, providedPassword) => {
+        let hashResult = await compare (providedPassword, storedHash);
+        console.log('Waffle House: ', hashResult);
+
+
+        return hashResult;
+
+    }
+
+    // let waffleHouse = await getPasswor
 
     try {
         userAccount = await knex.from('account').select('*').where({
-            username:req.query.username,
-            password:req.query.password
-        })
-        console.log('User account:', userAccount);
+            username:req.query.username
+        });
+        if(userAccount == ''){//no user matched username
+            console.log('no user found')
+        }
+        else{//username enterned matches a result in the db
+            console.log('Account username: ', userAccount[0].username)
+            let waffleHouse =  await validateHash(userAccount[0].password, req.query.password);
+            if(waffleHouse){//pasword matches the username
+                res.status(200).send(userAccount);
+
+            }
+            else{//incorrect password
+                res.status(200).send('');
+
+            }
+
+        }
+        console.log('User Account Value:', userAccount);
+        // userAccount.map(async(element) => {
+        //     console.log('What the user entered on login: ', req.query.password);
+        //     console.log('What got stored in the DB: ', element.password);
+        //     let waffleHouse =  await validateHash(element.password, req.query.password);
+        //     console.log('Waffle House Return--', waffleHouse)
+        //     if(!waffleHouse){//Account has not been verified
+        //         console.log('account not verified!!!!');
+        //         userAccount = null;
+
+        //     }
+        // })
+        // console.log('User account:', userAccount);
 
     } catch (e) {
 
     }
 
+    if(verifedAccount){
 
-    res.status(200).send(userAccount);
+    }
+
+    
 
 })
 
@@ -52,36 +98,42 @@ app.post('/createAccount', async(req, res) => {
 
     let createdAccount;
 
+    ///////SALTING AND HASHING RIGHT HERE
+    let hashedPassword = await hash(req.body.password, saltRounds);
+    console.log("BCrypt Hashed Password:", hashedPassword);
+        
+
+
+
+
+    ///END DSALTING AND HASHING
+
     try{//insert and create a new user in database
         let findUsernameMatch = await knex.from('account').select('*').where({
             username:req.body.username
         });
-        console.log('findusername match:', findUsernameMatch);
-        if(findUsernameMatch == null){
-            console.log('No Match found in account table');
-        }
-        else {
+        
+        let numMatches = 0;
+        findUsernameMatch.map(() => numMatches++);
 
-            console.log('Else condition hit in ', findUsernameMatch.length);
-        }
-        // console.log('Username match test:', findUsernameMatch[0]zss.id);
+        console.log('findusername match number:', numMatches);
 
-        if(findUsernameMatch.length !== 0){//Means that the username is already taken
-            createdAccount = null;
-
-        }
-        else{//Username is not taken so can insert data into database
+        if(numMatches === 0){//Username does not already exist. Free to Make account
             createdAccount = await knex('account').insert({
                 first_name:req.body.first_name,
                 last_name:req.body.last_name,
                 username:req.body.username,
-                password:req.body.password                
-            })
-
-            
+                password:hashedPassword                
+            });
+            console.log('Account was succesfully created');
 
         }
-        console.log('Created Account', createdAccount);
+        else{//Username is taken. User must try again/
+            createdAccount = null;
+            console.log('Account was NOT created')
+
+        }
+        
 
     } catch(e){
 

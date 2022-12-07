@@ -9,7 +9,7 @@ exports.up = function(knex) {
             table.string('first_name', 40);
             table.string('last_name', 40);
             table.string('username', 40);
-            table.string('password', 40);
+            table.string('password', 64);
 
 
         })

@@ -1,4 +1,4 @@
-import { Paper, Container, Box, Typography, Button, Stack, Modal, TextField } from "@mui/material";
+import { Paper, Container, Box, Typography, Button, Stack, Modal, TextField, Alert } from "@mui/material";
 import { useEffect, useState, useContext } from "react";
 import { NavLink, useNavigate, Navigate } from "react-router-dom";
 import { Context } from '../App.js';
@@ -8,60 +8,36 @@ import axios from 'axios';
 
 
 const handleLogin = (setLoginModalOpen) => {
-    console.log("Login button clicked");
     setLoginModalOpen(true);
-
 }
 
 const handleGuest = (setGuestUser) => {
-    console.log("Guest Button Clicked");
     setGuestUser(true);
-
-
 }
 const handleCreateAccount = (setCreateModalOpen) => {
-    console.log("Create Account Button Clicked");
     setCreateModalOpen(true);
-
 }
 
-const handleLoginSubmit = async(setVerifiedUser, username, password, setLoginModalOpen, setLoggedInUser) => {
-    console.log("Login Submit Clicked ");
-    console.log('Account UserName: ', username);
-    console.log('Account Password: ', password);
-    
+const handleLoginSubmit = async(setVerifiedUser, username, password, setLoginModalOpen, setLoggedInUser) => {    
     if(await validLogin(username, password, setLoggedInUser)){//succesful login
         setVerifiedUser(true);
         setLoginModalOpen(false);
-        
-        
-
     }
     else{//bad login attempt
         setVerifiedUser(false);
-
     }
-
-
-
-
 }
 
-const handleAccountSubmit = async (accountFirstName, accountLastName, accountUsername, accountPassword) => {
-    console.log('New Account information:', accountFirstName, accountLastName, accountUsername, accountPassword);
+const handleAccountSubmit = async (accountFirstName, accountLastName, accountUsername, accountPassword, setCreateSuccess) => {
     if(await accountCreation(accountFirstName, accountLastName, accountUsername, accountPassword)){//account creation was a success
-
+        setCreateSuccess(true);
     }
     else {//account creation failed
-
+        setCreateSuccess(false);
     }
-
-
 }
 
 const validLogin = async(usernameInput, passwordInput, setLoggedInUser) => {
-    console.log('Username value in ValidLogin: ', usernameInput)
-    
     let usernameResponse = await axios.get('http://localhost:8081/login',  {
         params: {
             username: usernameInput,
@@ -69,7 +45,6 @@ const validLogin = async(usernameInput, passwordInput, setLoggedInUser) => {
         }
     });
     
-    console.log('Response from Server:', usernameResponse.data[0]);
     if(usernameResponse.data.length !== 0 ){// A user account exits!
         setLoggedInUser(usernameResponse.data[0]);
         return true;
@@ -77,7 +52,6 @@ const validLogin = async(usernameInput, passwordInput, setLoggedInUser) => {
     else {
         return false;
     }
-
 }
 
 const accountCreation = async(accountFirstName, accountLastName, accountUsername, accountPassword) => {
@@ -89,11 +63,18 @@ const accountCreation = async(accountFirstName, accountLastName, accountUsername
 
     } );
 
+    if(accountCreationResponse.data === ''){//Account username is already taken. User needs to try again with a new username
+        return(false);
+    }
+    else {//account was succesfully created
+        return(true);
+    }
+    
+
 
 }
 
 const loginStyle = {
-    
     postion: 'absolute',
     width: '50%',
     bgcolor: 'background.paper',
@@ -110,7 +91,10 @@ const Home = () => {
     const handleCloseLogin = () => setLoginModalOpen(false);
 
     const [createModalOpen, setCreateModalOpen] = useState(false);
-    const handleCloseAccount = () => setCreateModalOpen(false);
+    const handleCloseAccount = () => {
+        setCreateModalOpen(false);
+        setCreateSuccess(false);
+    };
 
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
@@ -122,12 +106,10 @@ const Home = () => {
     const [accountUsername, setAccountUsername] = useState("");
     const [accountPassword, setAccountPassword] = useState("");
 
+    const [createSucces, setCreateSuccess] = useState(false);
 
 
     useEffect(() => {
-        console.log('USE EFFECT TRIGGERED');
-        console.log('Use Effect Value:', verifiedUser);
-
         if(verifiedUser){
             navigate('/InventoryManager');
         }
@@ -194,9 +176,28 @@ const Home = () => {
                         <TextField onChange={(e) => {setAccountLasttName(e.target.value)}} id="accountLastName" variant="outlined" label="Last Name" />
                         <TextField onChange={(e) => {setAccountUsername(e.target.value)}} id="accountUsername" variant="outlined" label="Username" />
                         <TextField onChange={(e) => {setAccountPassword(e.target.value)}} id="accountPassword" variant="outlined" label="Password" />
-                        <Button onClick={(e) => handleAccountSubmit(accountFirstName, accountLastName, accountUsername, accountPassword)} variant="contained" >SUBMIT</Button>
+                        <Button onClick={(e) => handleAccountSubmit(accountFirstName, accountLastName, accountUsername, accountPassword, setCreateSuccess)} variant="contained" >SUBMIT</Button>
 
                     </Stack>
+
+                    {createSucces ? 
+
+                    <Box>
+
+                        <Typography variant="h6">
+
+                            Account creation status: Succes
+                        </Typography>
+
+                        <Alert severity="success"> Account Was succesfully created. You can log in now</Alert>
+                    </Box>
+                    :
+                    <Typography variant="h6">
+
+                        Account creation status: Failure
+                    </Typography>
+                    }
+
 
 
                     </Box>
