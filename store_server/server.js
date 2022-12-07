@@ -18,3 +18,13 @@ app.get('/', (req, res) =>{
     res.status(200).send('Reached the base route for the STORE server.');
 
 })
+
+app.get('/login', (req, res) => {//Called When a user tries to log in.
+    console.log('--Login attempted--');
+    console.log(req.query);
+    console.log('Login username', req.query.username );
+    console.log('Login password', req.query.password );
+
+    res.status(200).send('Login Attempted')
+
+})

@@ -4,6 +4,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
 import Home from './components/Home';
 import InventoryManager from './components/InventoryManager';
+import Guest from './components/Guest'
 
 function App() {
   return (
@@ -12,6 +13,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Home/>} />
           <Route path='/InventoryManager' element={<InventoryManager />} />
+          <Route path='/Guest' element={<Guest />} />
 
 
 

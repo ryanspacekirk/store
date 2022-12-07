@@ -1,6 +1,9 @@
 import { Paper, Container, Box, Typography, Button, Stack, Modal, TextField } from "@mui/material";
 import { useEffect, useState } from "react";
 import { NavLink, useNavigate, Navigate } from "react-router-dom";
+import Guest from "./Guest";
+import axios from 'axios';
+
 
 
 const handleLogin = (setLoginModalOpen) => {
@@ -9,8 +12,9 @@ const handleLogin = (setLoginModalOpen) => {
 
 }
 
-const handleGuest = () => {
+const handleGuest = (setGuestUser) => {
     console.log("Guest Button Clicked");
+    setGuestUser(true);
 
 
 }
@@ -35,9 +39,22 @@ const handleLoginSubmit = (setVerifiedUser, username, password, setLoginModalOpe
 
 }
 
-const validLogin = (username, password) => {
-    if(username === 'admin' && password === 'admin'){//Will need to do a database call here to check user table
-        return true;
+const validLogin = async(usernameInput, passwordInput) => {
+    console.log('Username value in ValidLogin: ', usernameInput)
+    let loginObj = {
+        username:"test test",
+        password:passwordInput
+    }
+    let usernameResponse = await axios.get('http://localhost:8081/login',  {
+        params: {
+            username: usernameInput,
+            password: passwordInput
+        }
+    });
+    console.log('Response from Server:', usernameResponse)
+
+    if(usernameInput === 'admin' && passwordInput === 'admin'){//Will need to do a database call here to check user table
+        return false;
     }
     else {
         return false;
@@ -63,6 +80,7 @@ const Home = () => {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [verifiedUser, setVerifiedUser] = useState(false);
+    const [guestUser, setGuestUser] = useState(false);
 
     useEffect(() => {
         console.log('USE EFFECT TRIGGERED');
@@ -73,6 +91,13 @@ const Home = () => {
         }
 
     }, [verifiedUser]);
+
+    useEffect(() => {
+        if(guestUser){
+            navigate('/Guest');
+        }
+
+    }, [guestUser]);
 
     return(
         <Container>
@@ -117,7 +142,7 @@ const Home = () => {
                 <Box >
                     <Stack justifyContent="center" direction="row" spacing={2}>
                         <Button onClick={(e) => handleLogin(setLoginModalOpen)} variant="contained"> LOGIN </Button>
-                        <Button onClick={handleGuest} variant="contained"> GUEST </Button>
+                        <Button onClick={(e) => handleGuest(setGuestUser)} variant="contained"> GUEST </Button>
 
                     </Stack>
                     
