@@ -19,12 +19,25 @@ app.get('/', (req, res) =>{
 
 })
 
-app.get('/login', (req, res) => {//Called When a user tries to log in.
+app.get('/login', async(req, res) => {//Called When a user tries to log in.
     console.log('--Login attempted--');
     console.log(req.query);
     console.log('Login username', req.query.username );
     console.log('Login password', req.query.password );
+    let userAccount;
 
-    res.status(200).send('Login Attempted')
+    try {
+        userAccount = await knex.from('account').select('*').where({
+            username:req.query.username,
+            password:req.query.password
+        })
+        console.log('User account:', userAccount);
+
+    } catch (e) {
+
+    }
+
+
+    res.status(200).send(userAccount);
 
 })

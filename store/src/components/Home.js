@@ -19,11 +19,12 @@ const handleGuest = (setGuestUser) => {
 
 }
 
-const handleLoginSubmit = (setVerifiedUser, username, password, setLoginModalOpen) => {
+const handleLoginSubmit = async(setVerifiedUser, username, password, setLoginModalOpen) => {
     console.log("Login Submit Clicked ");
     console.log('Account UserName: ', username);
     console.log('Account Password: ', password);
-    if(validLogin(username, password)){//succesful login
+    
+    if(await validLogin(username, password)){//succesful login
         setVerifiedUser(true);
         setLoginModalOpen(false);
         
@@ -41,24 +42,22 @@ const handleLoginSubmit = (setVerifiedUser, username, password, setLoginModalOpe
 
 const validLogin = async(usernameInput, passwordInput) => {
     console.log('Username value in ValidLogin: ', usernameInput)
-    let loginObj = {
-        username:"test test",
-        password:passwordInput
-    }
+    
     let usernameResponse = await axios.get('http://localhost:8081/login',  {
         params: {
             username: usernameInput,
             password: passwordInput
         }
     });
-    console.log('Response from Server:', usernameResponse)
-
-    if(usernameInput === 'admin' && passwordInput === 'admin'){//Will need to do a database call here to check user table
-        return false;
+    
+    console.log('Response from Server:', usernameResponse.data);
+    if(usernameResponse.data.length !== 0 ){// A user account exits!
+        return true;
     }
     else {
         return false;
     }
+
 }
 
 const loginStyle = {
