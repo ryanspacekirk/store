@@ -337,12 +337,6 @@ const InventoryManager = () => {
 
                         </Grid>
 
-                        
-
-
-                        
-                        
-                    
 
                 </Container>
                 {/**This modal is for handling a verified user trying to add an item */}
