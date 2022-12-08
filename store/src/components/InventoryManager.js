@@ -5,11 +5,12 @@ import React, {useContext, useEffect, useState} from 'react';
 import { Context } from '../App.js';
 
 import Item from './Item.js';
+import MyItem from './MyItem.js';
 import axios from 'axios';
 
 const itemsPull = async(setItemList) => {
     let itemsFromServer = await axios.get('http://localhost:8081/items');
-    console.log('Items recieved from server:' ,itemsFromServer.data);
+    
     setItemList(itemsFromServer.data);
 
 
@@ -17,7 +18,7 @@ const itemsPull = async(setItemList) => {
 
 
 const handleListView = (listView, setListView) => {
-    console.log('list view toggled');
+    
     if(listView === 'my-list'){
         setListView('all-list');
     }
@@ -40,15 +41,24 @@ const handleItemCreate = async(setItemCreated, createItem_name, createItem_descr
             quantity:createItem_quantity
     });
 
-    console.log('Returned Item from insertion:', itemCreated);
+    
     if(itemCreated.data === ''){
-        console.log('ITEM WAS NOT ADDED TO TABLE');
+        
 
     }
     else{//Item was succesfully added
         setItemCreated(true);
 
     }
+
+
+}
+
+const checkForMatch = (clicked_userid, loggedIn_userid, setValidMatch) => {
+    clicked_userid === loggedIn_userid ? setValidMatch(true) : setValidMatch(false);
+    // console.log('Clicked item userid:', clicked_userid);
+    // console.log('Logged in User userid:', loggedIn_userid);
+
 
 
 }
@@ -63,6 +73,9 @@ const loginStyle = {
 
 
 const InventoryManager = () => {
+    
+
+    let firstLoad = true;
     const { loggedInUser, setLoggedInUser } = useContext(Context);
     let [loggedInDisplay, setLoggedInDisplay] = useState(true);
     let [listView, setListView] = useState('my-list');
@@ -81,9 +94,50 @@ const InventoryManager = () => {
         setItemCreated(false);
     }
 
+
+    //Logic and state required to handle a modal for the viewing/ editing all of the details
+    let [cardClicked_id, setCardClicked_id] = useState(-1);
+    let [displayCardInfo, setDisplayCardInfo] = useState(false);
+    let [clickedItem, setClickedItem] = useState([{
+        item_name:'test',
+        description:'testtt',
+        quantity: -1,
+        user_id: -1
+    }]);
+
+    //Logic and state to handle if a signed in user can edit the fields
+    let [validMatch, setValidMatch] = useState(false);
+
+    const handleInfoClose = () => {
+        setDisplayCardInfo(false);
+        setCardClicked_id(-1);
+    }
+   
+
+    useEffect(() => {
+        if(cardClicked_id !== -1){
+            console.log('Most recent card clicked:', cardClicked_id);
+            setDisplayCardInfo(true);
+            if(clickedItem.quantity !== -1){
+                setClickedItem(itemList.filter(element => element.id === cardClicked_id ));
+            }
+            checkForMatch(clickedItem[0].user_id, loggedInUser.id, setValidMatch);
+            console.log('Valid Match?', validMatch);
+            
+        }
+        
+        
+        console.log('Clicked Item:', clickedItem);
+        
+
+    },[cardClicked_id])
+
+
+
+
     useEffect(() => {//ON PAGE LOAD GET ALL THE ITEMS.
         itemsPull(setItemList);
-        console.log(itemList);
+        
         
         
     }, [itemCreated]);
@@ -92,7 +146,7 @@ const InventoryManager = () => {
         let tempList = [];
        
         tempList = itemList.filter(element => element.user_id === loggedInUser.id);
-        console.log('Temp List: ', tempList);
+        
         setDisplayList(tempList);
 
         
@@ -103,8 +157,7 @@ const InventoryManager = () => {
     
 
     useEffect(() => {//Ensures that a user is logged in to the page
-        console.log(loggedInUser);
-        console.log('Logged in user id', loggedInUser.id);
+        
 
         if(loggedInUser.id > 0){
             setLoggedInDisplay(true);
@@ -119,14 +172,14 @@ const InventoryManager = () => {
         let tempList = [];
         if(listView === 'my-list'){
             tempList = itemList.filter(element => element.user_id === loggedInUser.id);
-            console.log('Temp List: ', tempList);
+            
             setDisplayList(tempList);
 
         }
         else{
             setDisplayList(itemList);
         }
-        console.log(itemList);
+        
            
 
 
@@ -170,9 +223,15 @@ const InventoryManager = () => {
 
                         <Grid container spacing={4}>
                             {displayList.map((element) => {
-                                return(
-                                    <Item item={element} />
-                                )
+                                return(<Item item={element} setClickId={setCardClicked_id} />)
+                                // if(element.user_id === loggedInUser.id){//Display different cards for items the user has created
+                                //     return(<MyItem item={element} />)
+
+                                // }
+                                // else{
+                                //     return(<Item item={element} />)
+
+                                // }
 
                             })}
 
@@ -186,7 +245,7 @@ const InventoryManager = () => {
                     
 
                 </Container>
-
+                {/**This modal is for handling a verified user trying to add an item */}
                 <Modal
                     open={createItemOpen}
                     onClose={handleCloseCreateItem}
@@ -227,6 +286,64 @@ const InventoryManager = () => {
 
 
                     </Box>
+
+                </Modal>
+
+                {/** THis modal is when a user is trying to get more information or edit a card */}
+                <Modal
+                    open={displayCardInfo}
+                    onClose={handleInfoClose}
+                    
+                >   
+                <Box>
+                                   
+                    <Box sx={loginStyle}>
+                        <Typography>
+                            Additional Information
+                        </Typography>
+                        <Stack justifyContent='center' spacing={2}>
+                            <TextField  id="item_name" variant="outlined" label="Item Name" value={clickedItem[0].item_name} 
+                            inputProps={{readOnly:true}}
+                            >
+                                {itemList[cardClicked_id]} </TextField>
+                            <TextField  id="item_description" variant="outlined" label="Item Description" value={clickedItem[0].description} inputProps={{readOnly:true}} multiline
+                            > </TextField>
+                            <TextField  id="citem_quantity" variant="outlined" label="Quantity" value={clickedItem[0].quantity} inputProps={{readOnly:true}}
+                            > </TextField>
+
+                        </Stack>
+
+                        <Box>
+                        
+                    {validMatch ?
+                    <Stack justifyContent="center" direction="row" spacing={2}>
+                         <Button>DELETE</Button>
+                         <Button>Edit</Button>
+
+                     </Stack>
+                    
+                    
+                    
+                    :
+                     <React.Fragment>
+                            
+                     </React.Fragment>
+                    
+                     }
+
+                     </Box>
+
+                    </Box>
+                    {/** Need logic to handle what happens if the user is logged in and it is one of their items.
+                     * If it is they should be able to edit or delete.
+                     * If it is not they should not be able to touch it.
+                     */}
+
+                    
+                    
+                     </Box>  
+
+                    
 
                 </Modal>
 

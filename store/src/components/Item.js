@@ -1,10 +1,10 @@
-import { Card, Paper, Box, Typography, Grid } from "@mui/material";
-import { typography } from "@mui/system";
+import { Card, Paper, Box, Typography, Grid, CardActionArea } from "@mui/material";
+
 
 const truncatedDescription = (longDescription) => {
     let miniDescription;
     if(typeof longDescription === 'string'){
-        console.log('Description matches type of string');
+        
         if(longDescription.length < 100){
             miniDescription = longDescription;
         }
@@ -25,33 +25,43 @@ const truncatedDescription = (longDescription) => {
 
 }
 
-const Item = (prop) => {
+const cardClicked = (setCardClicked_id, itemid) => {
+    console.log('Card Clicked');
+    setCardClicked_id(itemid);
+}
+
+const Item = ({item, setClickId}) => {
+    
+   
     
     return(
         <Grid item xs={4} md={3}>
             <Paper>
                 <Card>
-                    <Box>
-                        <Typography variant="h6">
-                            Item: {prop.item.item_name}
-                        </Typography>
+                    <CardActionArea onClick={(e) => cardClicked(setClickId, item.id)}>
 
+                    
                         <Box>
-                            <Typography variant="h7">
-                                Description: {truncatedDescription(prop.item.description)}
+                            <Typography variant="h6">
+                                Item: {item.item_name}
                             </Typography>
+
                             <Box>
-                            <Typography variant="h7">
-                                Quantity: {prop.item.quantity}
-                            </Typography>
+                                <Typography variant="h7">
+                                    Description: {truncatedDescription(item.description)}
+                                </Typography>
+                                <Box>
+                                <Typography variant="h7">
+                                    Quantity: {item.quantity}
+                                </Typography>
+
+                                </Box>
+                                
 
                             </Box>
-                            
 
                         </Box>
-
-                    </Box>
-
+                    </CardActionArea>
                 </Card>
             </Paper>
 
