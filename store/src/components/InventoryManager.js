@@ -1,4 +1,4 @@
-import { Box, Typography, Button, RadioGroup, FormControl, FormLabel, FormControlLabel, Radio, Modal, Container, Stack, TextField, Alert, Grid } from '@mui/material';
+import { Box, Typography, Button, RadioGroup, FormControl, FormLabel, FormControlLabel, Radio, Modal, Container, Stack, TextField, Alert, Grid, Dialog, DialogContentText, DialogTitle, DialogContent, DialogActions } from '@mui/material';
 
 import React, {useContext, useEffect, useState, useRef} from 'react';
 
@@ -61,15 +61,25 @@ const checkForMatch = (clicked_userid, loggedIn_userid, setValidMatch) => {
     
 }
 
-const handleDelete = async (deleteId, setSuccessfullDelete) => {
+const handleDelete =  (setDeleteDialog, deleteId, setSuccessfullDelete) => {
+    setDeleteDialog(true);
     
+    
+
+}
+const clearDelete = (setDeleteDialog) => {
+    setDeleteDialog(false);
+}
+
+const handleDeleteDialog = async(deleteId, setSuccessfullDelete ) => {
     let deletedElement = await axios.delete(`http://localhost:8081/deleteItem/${deleteId}`);
-    
-    if(deletedElement.status === 204){//successful delete
-        
-
+    console.log('Delete Object:', deletedElement);
+    if(deletedElement.status == 204){
+        console.log('Succesful delete!');
+        setSuccessfullDelete(true);
     }
-
+    
+    
 }
 
 const handleUpdate = async(setEditModal, setInfoModal) => {
@@ -135,7 +145,10 @@ const InventoryManager = () => {
     let [validMatch, setValidMatch] = useState(false);
 
     //Logic and state required to delete from database
-    let [succesfullDelete, setSuccessfullDelete] = useState(true);
+    let [succesfullDelete, setSuccessfullDelete] = useState(false);
+    let [deleteDialog, setDeleteDialog] = useState(false);
+
+    const handleDeleteDialogClose = () => {setDeleteDialog(false)}
 
     //logic and state to handle an update to the db
     let [viewEditModal, setViewEditModal] = useState(false);
@@ -145,10 +158,21 @@ const InventoryManager = () => {
 
     const handleEditCLose = () => {
         setViewEditModal(false);
+        setSuccessfullDelete(false);
 
     }
 
-    const handleInfoClose = () => {
+    useEffect(() => {
+        console.log('Succesful delete useeffect called');
+        itemsPull(setItemList);
+        setDisplayCardInfo(false);
+        setDeleteDialog(false);
+
+
+    }, [succesfullDelete])
+
+    const handleInfoClose = () => {//Gets called after the delte button is pressed. Need to update item list at this point
+        itemsPull(setItemList);
         setDisplayCardInfo(false);
         setCardClicked_id(-1);
     }
@@ -357,7 +381,7 @@ const InventoryManager = () => {
                             <TextField  id="item_name" variant="outlined" label="Item Name" value={clickedItem.item_name} 
                             inputProps={{readOnly:true}}
                             >
-                                {itemList[cardClicked_id]} </TextField>
+                                {itemList[clickedItem.id]} </TextField>
                             <TextField  id="item_description" variant="outlined" label="Item Description" value={clickedItem.description} inputProps={{readOnly:true}} multiline
                             > </TextField>
                             <TextField  id="citem_quantity" variant="outlined" label="Quantity" value={clickedItem.quantity} inputProps={{readOnly:true}}
@@ -369,7 +393,7 @@ const InventoryManager = () => {
                         
                     {validMatch ?
                     <Stack justifyContent="center" direction="row" spacing={2}>
-                         <Button onClick={(e) => handleDelete(cardClicked_id, setSuccessfullDelete)}>DELETE</Button>
+                         <Button onClick={(e) => handleDelete(setDeleteDialog)}>DELETE</Button>
                          <Button onClick={(e) =>handleUpdate(setViewEditModal, setDisplayCardInfo)}>Edit</Button>
 
                      </Stack>
@@ -384,6 +408,28 @@ const InventoryManager = () => {
                      }
 
                      </Box>
+                        <Dialog
+                            open={deleteDialog}
+                            onClose={handleDeleteDialogClose}
+                        >
+                            <DialogTitle id="alert-delete"> 
+                                Confirm Delete Of Item?
+                            </DialogTitle>
+                            <DialogContent>
+                                <DialogContentText id='confirm-before-delete'>
+                                    Confirm that you would like to delte this item
+                                </DialogContentText>
+
+                            </DialogContent>
+                            <DialogActions>
+                                <Button onClick={(e) => handleDeleteDialog(clickedItem.id, setSuccessfullDelete)}>DELETE</Button>
+                                <Button onClick={(e) => clearDelete(setDeleteDialog)}>GO BACK</Button>
+                            </DialogActions>
+                            
+
+
+
+                            </Dialog>
 
                     </Box>
                     {/** Need logic to handle what happens if the user is logged in and it is one of their items.
