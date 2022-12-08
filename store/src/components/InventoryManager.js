@@ -63,6 +63,21 @@ const checkForMatch = (clicked_userid, loggedIn_userid, setValidMatch) => {
 
 }
 
+const handleDelete = async (deleteId, setSuccessfullDelete) => {
+    console.log('Delete requested for item:', deleteId);
+    let deletedElement = await axios.delete(`http://localhost:8081/deleteItem/${deleteId}`);
+    console.log('Deleted Element response:', deletedElement);
+    if(deletedElement.status === 204){//successful delete
+        console.log('Item succesfully delete from db');
+
+    }
+
+}
+
+const handleUpdate = async() => {
+
+}
+
 const loginStyle = {
     postion: 'absolute',
     width: '50%',
@@ -107,6 +122,14 @@ const InventoryManager = () => {
 
     //Logic and state to handle if a signed in user can edit the fields
     let [validMatch, setValidMatch] = useState(false);
+
+    //Logic and state required to delete from database
+    let [succesfullDelete, setSuccessfullDelete] = useState(true);
+
+    //logic and state to handle an update to the db
+    let [update_item_name, setUpdate_item_name] = useState('');
+    let [update_description, setUpdate_description] = useState('');
+    let [update_quantity, setUpdate_quantity] = useState(-1);
 
     const handleInfoClose = () => {
         setDisplayCardInfo(false);
@@ -317,8 +340,8 @@ const InventoryManager = () => {
                         
                     {validMatch ?
                     <Stack justifyContent="center" direction="row" spacing={2}>
-                         <Button>DELETE</Button>
-                         <Button>Edit</Button>
+                         <Button onClick={(e) => handleDelete(cardClicked_id, setSuccessfullDelete)}>DELETE</Button>
+                         <Button onClick={(e) =>handleUpdate}>Edit</Button>
 
                      </Stack>
                     

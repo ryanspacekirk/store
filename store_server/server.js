@@ -7,6 +7,7 @@ const cors = require('cors');
 const port = 8081;
 const knex = require('knex')(require('./knexfile')["development"]);
 const bcrypt = require("bcrypt");
+const { response } = require('express');
 
 const saltRounds = 10; 
 const { hash, compare } = bcrypt;
@@ -205,5 +206,76 @@ app.post('/newItem', async(req, res) => {
     }
 
     res.status(200).send(newItem);
+    
+});//-----------------------------------------------------------------------------------------------------------------------
+
+
+//----------app.delte for item for new item----------------------------------------------------------------------------------------
+
+app.delete('/deleteItem/:id', async(req, res) => {
+    const delete_id = parseInt(req.params.id);
+    console.log('Delete request for item:', delete_id);
+    let deletedItem;
+    
+    
+    try{
+        deletedItem = await knex('item').where('id', delete_id).del();
+        console.log('Knex delted item:', deletedItem);
+        res.status(204).send(deletedItem.toString());
+        
+        
+        
+        
+        
+
+    } catch (e){
+        console.log('Item Delete error:', e);
+        deletedItem = -1;
+        res.status(200).send('');
+        
+
+    }
+
+    
+    
+});//-----------------------------------------------------------------------------------------------------------------------
+
+
+//----------app.delte for item for new item----------------------------------------------------------------------------------------
+
+app.patch('/updateItem/:id', async(req, res) => {
+    const update_id = parseInt(req.params.id);
+    console.log('Item to update:', update_id);
+    console.log('Item changes:', req.body);
+    
+    let updatedItem = {
+        'item_name': req.body.item_name,
+        'description': req.body.description ,
+        'quantity': req.body.quantity
+    };
+
+    console.log('Item Update', updatedItem);
+    
+    
+    try{
+        let knexItemUpdate = await knex('item').where('id', update_id).update(updatedItem);
+        console.log('Knex update result: ', knexItemUpdate);
+        res.status(200).send('UPDATED');
+        
+        
+        
+        
+        
+        
+
+    } catch (e){
+        console.log('Error updating item: ', e);
+        res.status(304).send('FAILED');
+        
+        
+
+    }
+
+    
     
 });//-----------------------------------------------------------------------------------------------------------------------
