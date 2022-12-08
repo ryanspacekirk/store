@@ -153,14 +153,57 @@ app.post('/createAccount', async(req, res) => {
 
 app.get('/items', async(req, res) => {
     console.log('Requested items from server');
-    let itemList;
+    let itemsList;
     
     try{
         itemsList = await knex.from('item').select('*');
-        console.log('Items List:', itemsList);
+        //console.log('Items List:', itemsList);
 
     } catch (e){
 
     }
     res.status(200).send(itemsList);
+    
+});//-----------------------------------------------------------------------------------------------------------------------
+
+
+//----------app.post for new item----------------------------------------------------------------------------------------
+
+app.post('/newItem', async(req, res) => {
+    console.log('Requested to add new item to the database');
+    console.log('New Item User ID:', req.body.user_id);
+    console.log('New Item Item Name:', req.body.item_name);
+    console.log('New Item Description:', req.body.description);
+    console.log('New Item Quantity:', req.body.quantity);
+    let newItem;
+    
+    try{
+        if(req.body.item_name === ''){//Dont insert without an item name
+            console.log('Missing Item Name');
+
+        }
+        else{
+            newItem = await knex('item').insert({
+                user_id:req.body.user_id,
+                item_name:req.body.item_name,
+                description:req.body.item_description,
+                quantity:req.body.quantity
+    
+            });
+
+        }
+        
+        
+        
+        
+
+    } catch (e){
+        newItem='';
+        console.log('Problem inserting new item:');
+        console.log(e);
+
+    }
+
+    res.status(200).send(newItem);
+    
 });//-----------------------------------------------------------------------------------------------------------------------
