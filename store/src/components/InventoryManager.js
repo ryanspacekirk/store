@@ -1,4 +1,4 @@
-import { Box, Typography, Button, RadioGroup, FormControl, FormLabel, FormControlLabel, Radio, Modal, Container, Stack, TextField, Alert } from '@mui/material';
+import { Box, Typography, Button, RadioGroup, FormControl, FormLabel, FormControlLabel, Radio, Modal, Container, Stack, TextField, Alert, Grid } from '@mui/material';
 
 import React, {useContext, useEffect, useState} from 'react';
 
@@ -168,12 +168,17 @@ const InventoryManager = () => {
                             Item List
                         </Typography>
 
-                        {displayList.map((element) => {
-                            return(
-                            <Item item={element} />
-                            )
+                        <Grid container spacing={4}>
+                            {displayList.map((element) => {
+                                return(
+                                    <Item item={element} />
+                                )
 
-                        })}
+                            })}
+
+                        </Grid>
+
+                        
 
 
                         
