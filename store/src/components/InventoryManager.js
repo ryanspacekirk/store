@@ -33,6 +33,7 @@ const InventoryManager = () => {
     let [loggedInDisplay, setLoggedInDisplay] = useState(true);
     let [listView, setListView] = useState('my-list');
     let [itemList, setItemList] = useState([]);
+    let [displayList, setDisplayList] = useState([]);
 
     useEffect(() => {//ON PAGE LOAD GET ALL THE ITEMS.
         itemsPull(setItemList);
@@ -56,6 +57,18 @@ const InventoryManager = () => {
     }, [loggedInUser]);
 
     useEffect(() => {
+        let tempList = [];
+        if(listView === 'my-list'){
+            tempList = itemList.filter(element => element.user_id === loggedInUser.id);
+            console.log('Temp List: ', tempList);
+            setDisplayList(tempList);
+
+        }
+        else{
+            setDisplayList(itemList);
+        }
+        
+        
         
 
 
@@ -97,7 +110,7 @@ const InventoryManager = () => {
                             Item List
                         </Typography>
 
-                        {itemList.map((element) => {
+                        {displayList.map((element) => {
                             return(
                             <Item item={element} />
                             )
