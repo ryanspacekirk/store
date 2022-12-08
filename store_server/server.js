@@ -158,7 +158,7 @@ app.get('/items', async(req, res) => {
     
     try{
         itemsList = await knex.from('item').select('*');
-        //console.log('Items List:', itemsList);
+        console.log('Items List:', itemsList);
 
     } catch (e){
 
@@ -241,7 +241,7 @@ app.delete('/deleteItem/:id', async(req, res) => {
 });//-----------------------------------------------------------------------------------------------------------------------
 
 
-//----------app.delte for item for new item----------------------------------------------------------------------------------------
+//----------app.patch for item for new item----------------------------------------------------------------------------------------
 
 app.patch('/updateItem/:id', async(req, res) => {
     const update_id = parseInt(req.params.id);

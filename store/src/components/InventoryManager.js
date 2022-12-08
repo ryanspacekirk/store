@@ -11,7 +11,9 @@ import axios from 'axios';
 
 
 const itemsPull = async(setItemList) => {
+    console.log('ITEM MIST UPDATED FROM SERVER');
     let itemsFromServer = await axios.get('http://localhost:8081/items');
+    console.log('Item list Update:', itemsFromServer);
     
     setItemList(itemsFromServer.data);
 
@@ -88,12 +90,24 @@ const handleUpdate = async(setEditModal, setInfoModal) => {
 
 }
 
-const handleUpdateSubmit = async(cardClicked_id, update_item_name, update_description, update_quantity) => {
+const handleUpdateSubmit = async(updateid, update_item_name, update_description, update_quantity, setSuccessfulUpdate) => {
     console.log('Update Record Requested.');
-    console.log('Record ID: ', cardClicked_id);
+    console.log('Record ID: ', updateid);
     console.log('Update item name: ', update_item_name);
     console.log('Update item description: ', update_description);
     console.log('Update item quantity: ', update_quantity);
+
+    let updateResult = await axios.patch(`http://localhost:8081/updateItem/${updateid}`, {
+        item_name:update_item_name,
+        description:update_description,
+        quantity:update_quantity
+    });
+    console.log('Update Result:', updateResult);
+
+    if(updateResult.status === 200){
+        console.log('Succesful Update!');
+        setSuccessfulUpdate(true);
+    }
 
 }
 
@@ -155,12 +169,19 @@ const InventoryManager = () => {
     let [update_item_name, setUpdate_item_name] = useState('');
     let [update_description, setUpdate_description] = useState('');
     let [update_quantity, setUpdate_quantity] = useState(-1);
+    let [succsessful_update , setSuccessfulUpdate] = useState('false');
 
     const handleEditCLose = () => {
         setViewEditModal(false);
         setSuccessfullDelete(false);
 
     }
+
+    useEffect(() => {//UPDATED RECORD SUCCESFULLY
+        itemsPull(setItemList);
+        
+
+    }, [succsessful_update])
 
     useEffect(() => {
         console.log('Succesful delete useeffect called');
@@ -219,9 +240,12 @@ const InventoryManager = () => {
     }, [itemCreated]);
 
     useEffect(() => {
+        setSuccessfulUpdate(false);
+        
         let tempList = [];
        
         tempList = itemList.filter(element => element.user_id === loggedInUser.id);
+        console.log('Temp list value', tempList);
         
         setDisplayList(tempList);
 
@@ -469,7 +493,7 @@ const InventoryManager = () => {
                         
                     
                     <Stack justifyContent="center" direction="row" spacing={2}>
-                         <Button onClick={(e) => handleUpdateSubmit(cardClicked_id, update_item_name, update_description, update_quantity)}>SUBMIT CHANGES</Button>
+                         <Button onClick={(e) => handleUpdateSubmit(clickedItem.id, update_item_name, update_description, update_quantity, setSuccessfulUpdate)}>SUBMIT CHANGES</Button>
                          
                      </Stack>
                     
