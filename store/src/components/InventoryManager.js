@@ -38,10 +38,25 @@ const InventoryManager = () => {
     useEffect(() => {//ON PAGE LOAD GET ALL THE ITEMS.
         itemsPull(setItemList);
         console.log(itemList);
+        //setDisplayList(itemList);
         
 
 
-    }, [])
+    }, []);
+
+    useEffect(() => {
+        let tempList = [];
+       
+        tempList = itemList.filter(element => element.user_id === loggedInUser.id);
+        console.log('Temp List: ', tempList);
+        setDisplayList(tempList);
+
+        
+       
+
+    }, [itemList]);
+
+    
 
     useEffect(() => {//Ensures that a user is logged in to the page
         console.log(loggedInUser);
@@ -67,9 +82,7 @@ const InventoryManager = () => {
         else{
             setDisplayList(itemList);
         }
-        
-        
-        
+           
 
 
     }, [listView]);
