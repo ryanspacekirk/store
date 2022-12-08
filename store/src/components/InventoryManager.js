@@ -11,9 +11,9 @@ import axios from 'axios';
 
 
 const itemsPull = async(setItemList) => {
-    console.log('ITEM MIST UPDATED FROM SERVER');
+    
     let itemsFromServer = await axios.get('http://localhost:8081/items');
-    console.log('Item list Update:', itemsFromServer);
+    
     
     setItemList(itemsFromServer.data);
 
@@ -75,9 +75,9 @@ const clearDelete = (setDeleteDialog) => {
 
 const handleDeleteDialog = async(deleteId, setSuccessfullDelete ) => {
     let deletedElement = await axios.delete(`http://localhost:8081/deleteItem/${deleteId}`);
-    console.log('Delete Object:', deletedElement);
+    
     if(deletedElement.status == 204){
-        console.log('Succesful delete!');
+        
         setSuccessfullDelete(true);
     }
     
@@ -91,21 +91,17 @@ const handleUpdate = async(setEditModal, setInfoModal) => {
 }
 
 const handleUpdateSubmit = async(updateid, update_item_name, update_description, update_quantity, setSuccessfulUpdate) => {
-    console.log('Update Record Requested.');
-    console.log('Record ID: ', updateid);
-    console.log('Update item name: ', update_item_name);
-    console.log('Update item description: ', update_description);
-    console.log('Update item quantity: ', update_quantity);
+    
 
     let updateResult = await axios.patch(`http://localhost:8081/updateItem/${updateid}`, {
         item_name:update_item_name,
         description:update_description,
         quantity:update_quantity
     });
-    console.log('Update Result:', updateResult);
+    
 
     if(updateResult.status === 200){
-        console.log('Succesful Update!');
+        
         setSuccessfulUpdate(true);
     }
 
@@ -124,7 +120,7 @@ const InventoryManager = () => {
     const isMounted = useRef(false);
     
 
-    let firstLoad = true;
+    
     const { loggedInUser, setLoggedInUser } = useContext(Context);
     let [loggedInDisplay, setLoggedInDisplay] = useState(true);
     let [listView, setListView] = useState('my-list');
@@ -145,7 +141,7 @@ const InventoryManager = () => {
 
 
     //Logic and state required to handle a modal for the viewing/ editing all of the details
-    let [cardClicked_id, setCardClicked_id] = useState(-1);
+    
     let [displayCardInfo, setDisplayCardInfo] = useState(false);
     let [clickedItem, setClickedItem] = useState({
         id:-1,
@@ -184,7 +180,7 @@ const InventoryManager = () => {
     }, [succsessful_update])
 
     useEffect(() => {
-        console.log('Succesful delete useeffect called');
+        
         itemsPull(setItemList);
         setDisplayCardInfo(false);
         setDeleteDialog(false);
@@ -195,7 +191,7 @@ const InventoryManager = () => {
     const handleInfoClose = () => {//Gets called after the delte button is pressed. Need to update item list at this point
         itemsPull(setItemList);
         setDisplayCardInfo(false);
-        setCardClicked_id(-1);
+        
     }
 
     useEffect(() => {
@@ -205,7 +201,7 @@ const InventoryManager = () => {
 
     useEffect(() => {
         if(isMounted.current){
-            console.log('Clicked Item:', clickedItem);
+            
             setDisplayCardInfo(true);            
             checkForMatch(clickedItem.user_id, loggedInUser.id, setValidMatch);
 
@@ -218,14 +214,6 @@ const InventoryManager = () => {
         else{
             isMounted.current = true;
         }
-        
-
-            //Auto populate text forms in edit field
-            // setUpdate_item_name(clickedItem[0].item_name);
-            // console.log('Updated Item Name Value:', update_item_name);
-            // setUpdate_description(clickedItem[0].description);
-            // setUpdate_item_name(clickedItem[0].item_name);
-            
 
     },[clickedItem])
 
@@ -245,12 +233,8 @@ const InventoryManager = () => {
         let tempList = [];
        
         tempList = itemList.filter(element => element.user_id === loggedInUser.id);
-        console.log('Temp list value', tempList);
         
         setDisplayList(tempList);
-
-        
-       
 
     }, [itemList]);
 
