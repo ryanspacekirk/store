@@ -1,12 +1,14 @@
 import { Box, Typography, Button, RadioGroup, FormControl, FormLabel, FormControlLabel, Radio, Modal, Container, Stack, TextField, Alert, Grid } from '@mui/material';
 
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useContext, useEffect, useState, useRef} from 'react';
 
 import { Context } from '../App.js';
 
 import Item from './Item.js';
 import MyItem from './MyItem.js';
 import axios from 'axios';
+
+
 
 const itemsPull = async(setItemList) => {
     let itemsFromServer = await axios.get('http://localhost:8081/items');
@@ -56,25 +58,32 @@ const handleItemCreate = async(setItemCreated, createItem_name, createItem_descr
 
 const checkForMatch = (clicked_userid, loggedIn_userid, setValidMatch) => {
     clicked_userid === loggedIn_userid ? setValidMatch(true) : setValidMatch(false);
-    // console.log('Clicked item userid:', clicked_userid);
-    // console.log('Logged in User userid:', loggedIn_userid);
-
-
-
+    
 }
 
 const handleDelete = async (deleteId, setSuccessfullDelete) => {
-    console.log('Delete requested for item:', deleteId);
+    
     let deletedElement = await axios.delete(`http://localhost:8081/deleteItem/${deleteId}`);
-    console.log('Deleted Element response:', deletedElement);
+    
     if(deletedElement.status === 204){//successful delete
-        console.log('Item succesfully delete from db');
+        
 
     }
 
 }
 
-const handleUpdate = async() => {
+const handleUpdate = async(setEditModal, setInfoModal) => {
+    setEditModal(true);
+    setInfoModal(false);
+
+}
+
+const handleUpdateSubmit = async(cardClicked_id, update_item_name, update_description, update_quantity) => {
+    console.log('Update Record Requested.');
+    console.log('Record ID: ', cardClicked_id);
+    console.log('Update item name: ', update_item_name);
+    console.log('Update item description: ', update_description);
+    console.log('Update item quantity: ', update_quantity);
 
 }
 
@@ -88,6 +97,7 @@ const loginStyle = {
 
 
 const InventoryManager = () => {
+    const isMounted = useRef(false);
     
 
     let firstLoad = true;
@@ -113,12 +123,13 @@ const InventoryManager = () => {
     //Logic and state required to handle a modal for the viewing/ editing all of the details
     let [cardClicked_id, setCardClicked_id] = useState(-1);
     let [displayCardInfo, setDisplayCardInfo] = useState(false);
-    let [clickedItem, setClickedItem] = useState([{
+    let [clickedItem, setClickedItem] = useState({
+        id:-1,
         item_name:'test',
         description:'testtt',
         quantity: -1,
         user_id: -1
-    }]);
+    });
 
     //Logic and state to handle if a signed in user can edit the fields
     let [validMatch, setValidMatch] = useState(false);
@@ -127,33 +138,51 @@ const InventoryManager = () => {
     let [succesfullDelete, setSuccessfullDelete] = useState(true);
 
     //logic and state to handle an update to the db
+    let [viewEditModal, setViewEditModal] = useState(false);
     let [update_item_name, setUpdate_item_name] = useState('');
     let [update_description, setUpdate_description] = useState('');
     let [update_quantity, setUpdate_quantity] = useState(-1);
+
+    const handleEditCLose = () => {
+        setViewEditModal(false);
+
+    }
 
     const handleInfoClose = () => {
         setDisplayCardInfo(false);
         setCardClicked_id(-1);
     }
+
+    useEffect(() => {
+        setDisplayCardInfo(false);
+    }, [])
    
 
     useEffect(() => {
-        if(cardClicked_id !== -1){
-            console.log('Most recent card clicked:', cardClicked_id);
-            setDisplayCardInfo(true);
-            if(clickedItem.quantity !== -1){
-                setClickedItem(itemList.filter(element => element.id === cardClicked_id ));
-            }
-            checkForMatch(clickedItem[0].user_id, loggedInUser.id, setValidMatch);
-            console.log('Valid Match?', validMatch);
-            
+        if(isMounted.current){
+            console.log('Clicked Item:', clickedItem);
+            setDisplayCardInfo(true);            
+            checkForMatch(clickedItem.user_id, loggedInUser.id, setValidMatch);
+
+            //populate edit fields
+            setUpdate_item_name(clickedItem.item_name);
+            setUpdate_description(clickedItem.description);
+            setUpdate_quantity(clickedItem.quantity);
+
+        }
+        else{
+            isMounted.current = true;
         }
         
-        
-        console.log('Clicked Item:', clickedItem);
-        
 
-    },[cardClicked_id])
+            //Auto populate text forms in edit field
+            // setUpdate_item_name(clickedItem[0].item_name);
+            // console.log('Updated Item Name Value:', update_item_name);
+            // setUpdate_description(clickedItem[0].description);
+            // setUpdate_item_name(clickedItem[0].item_name);
+            
+
+    },[clickedItem])
 
 
 
@@ -246,7 +275,7 @@ const InventoryManager = () => {
 
                         <Grid container spacing={4}>
                             {displayList.map((element) => {
-                                return(<Item item={element} setClickId={setCardClicked_id} />)
+                                return(<Item item={element} setClickedItem={setClickedItem} />)
                                 // if(element.user_id === loggedInUser.id){//Display different cards for items the user has created
                                 //     return(<MyItem item={element} />)
 
@@ -325,13 +354,13 @@ const InventoryManager = () => {
                             Additional Information
                         </Typography>
                         <Stack justifyContent='center' spacing={2}>
-                            <TextField  id="item_name" variant="outlined" label="Item Name" value={clickedItem[0].item_name} 
+                            <TextField  id="item_name" variant="outlined" label="Item Name" value={clickedItem.item_name} 
                             inputProps={{readOnly:true}}
                             >
                                 {itemList[cardClicked_id]} </TextField>
-                            <TextField  id="item_description" variant="outlined" label="Item Description" value={clickedItem[0].description} inputProps={{readOnly:true}} multiline
+                            <TextField  id="item_description" variant="outlined" label="Item Description" value={clickedItem.description} inputProps={{readOnly:true}} multiline
                             > </TextField>
-                            <TextField  id="citem_quantity" variant="outlined" label="Quantity" value={clickedItem[0].quantity} inputProps={{readOnly:true}}
+                            <TextField  id="citem_quantity" variant="outlined" label="Quantity" value={clickedItem.quantity} inputProps={{readOnly:true}}
                             > </TextField>
 
                         </Stack>
@@ -341,7 +370,7 @@ const InventoryManager = () => {
                     {validMatch ?
                     <Stack justifyContent="center" direction="row" spacing={2}>
                          <Button onClick={(e) => handleDelete(cardClicked_id, setSuccessfullDelete)}>DELETE</Button>
-                         <Button onClick={(e) =>handleUpdate}>Edit</Button>
+                         <Button onClick={(e) =>handleUpdate(setViewEditModal, setDisplayCardInfo)}>Edit</Button>
 
                      </Stack>
                     
@@ -363,6 +392,48 @@ const InventoryManager = () => {
                      */}
 
                     
+                    
+                     </Box>  
+
+                    
+
+                </Modal>
+
+                {/** THIS MODAL JUST FOR EDITING **/}
+                <Modal
+                    open={viewEditModal}
+                    onClose={handleEditCLose}
+                    
+                >   
+                <Box>
+                                   
+                    <Box sx={loginStyle}>
+                        <Typography>
+                            Edit Record Information 
+                        </Typography>
+                        <Stack justifyContent='center' spacing={2}>
+                            <TextField onChange={(e) => setUpdate_item_name(e.target.value)}  id="edit_item_name" variant="outlined" label="Item Name" value={update_item_name}  />   
+                            <TextField onChange={(e) => setUpdate_description(e.target.value)}  id="edit_item_description" variant="outlined" label="Item Description" value={update_description}   multiline />
+                            <TextField onChange={(e) => setUpdate_quantity(e.target.value)} id="edit_item_quantity" variant="outlined" label="Quantity" value={update_quantity}  />
+                            
+
+                        </Stack>
+
+                        <Box>
+                        
+                    
+                    <Stack justifyContent="center" direction="row" spacing={2}>
+                         <Button onClick={(e) => handleUpdateSubmit(cardClicked_id, update_item_name, update_description, update_quantity)}>SUBMIT CHANGES</Button>
+                         
+                     </Stack>
+                    
+                
+
+                     </Box>
+
+                    </Box>
+                
+
                     
                      </Box>  
 

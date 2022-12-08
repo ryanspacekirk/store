@@ -26,11 +26,12 @@ const truncatedDescription = (longDescription) => {
 }
 
 const cardClicked = (setCardClicked_id, itemid) => {
-    console.log('Card Clicked');
+    console.log('Card was clicked');
+    
     setCardClicked_id(itemid);
 }
 
-const Item = ({item, setClickId}) => {
+const Item = ({item, setClickedItem}) => {
     
    
     
@@ -38,7 +39,7 @@ const Item = ({item, setClickId}) => {
         <Grid item xs={4} md={3}>
             <Paper>
                 <Card>
-                    <CardActionArea onClick={(e) => cardClicked(setClickId, item.id)}>
+                    <CardActionArea onClick={(e) => setClickedItem(item)}>
 
                     
                         <Box>
