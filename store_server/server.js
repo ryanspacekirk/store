@@ -5,6 +5,7 @@ const app = express();
 const router = express.Router()
 const cors = require('cors');
 const port = 8081;
+const env = process.env.NODE_ENV || 'development'
 const knex = require('knex')(require('./knexfile')["development"]);
 const bcrypt = require("bcrypt");
 const { response } = require('express');
