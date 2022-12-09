@@ -1,4 +1,3 @@
-import logo from './logo.svg';
 import './App.css';
 import config from './config'
 import React, {useState} from 'react';
