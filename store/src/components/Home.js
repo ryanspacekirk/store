@@ -1,8 +1,9 @@
 import { Paper, Container, Box, Typography, Button, Stack, Modal, TextField, Alert } from "@mui/material";
-import { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { NavLink, useNavigate, Navigate } from "react-router-dom";
 import { Context } from '../App.js';
 import Guest from "./Guest";
+import LogIn from "./modals/LogIn.js";
 import axios from 'axios';
 
 
@@ -143,25 +144,14 @@ const Home = () => {
 
                 </Box>
                 {/* First modal is for log in */}
-                <Modal
-                    open={loginModalOpen}
-                    onClose={handleCloseLogin}
-                >
-                    <Box sx={loginStyle}>
-                    <Typography variant="h6">
-                        This is the login modal
-                    </Typography>
-                    <Stack justifyContent="center" spacing={2}>
-                        <TextField onChange={(e) => {setUsername(e.target.value)}} id="username" variant="outlined" label="Username" />
-                        <TextField onChange={(e) => {setPassword(e.target.value)}} id="password" variant="outlined" label="Password" />
-                        <Button onClick={(e) => handleLoginSubmit(setVerifiedUser, username, password, setLoginModalOpen, setLoggedInUser)} variant="contained" >SUBMIT</Button>
+                {loginModalOpen ? 
+                    <LogIn logInSet={setLoginModalOpen} />
+                    :
+                    <React.Fragment/>
 
-                    </Stack>
+                }   
 
-
-                    </Box>
-
-                </Modal>
+                
 
                 {/* Second Modal modal is for account creation */}
                 <Modal
