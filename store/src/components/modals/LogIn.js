@@ -2,8 +2,13 @@ import { Paper, Container, Box, Typography, Button, Stack, Modal, TextField, Ale
 import React, { useEffect, useState, useContext } from "react";
 import { NavLink, useNavigate, Navigate, useSearchParams } from "react-router-dom";
 
+
+
 import { Context } from '../../App.js';
 import axios from 'axios';
+
+import config from '../../config'
+const ApiUrl = config[process.env.REACT_APP_NODE_ENV || "development"].apiUrl;
 
 const handleLoginSubmit = async(setVerifiedUser, username, password, setLoginModalOpen, setLoggedInUser, navigate, logInSet, setFailedLogin) => {    
     console.log('LOGIN SUBMIT')
@@ -26,7 +31,8 @@ const handleLoginSubmit = async(setVerifiedUser, username, password, setLoginMod
 const validLogin = async(usernameInput, passwordInput, setLoggedInUser) => {
     console.log('valid log in called');
     console.log('username input:', usernameInput);
-    let usernameResponse = await axios.get('http://localhost:8081/login',  {
+    console.log('query paramaeters url endpoint', ApiUrl, '/login' );
+    let usernameResponse = await axios.get(ApiUrl+ '/login',  {
         params: {
             username: usernameInput,
             password: passwordInput
