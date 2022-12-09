@@ -9,13 +9,17 @@ import Item from './Item.js';
 import MyItem from './MyItem.js';
 import axios from 'axios';
 
+import config from '../config'
+const ApiUrl = config[process.env.REACT_APP_NODE_ENV || "development"].apiUrl;
+
+
 
 
 
 
 const itemsPull = async(setItemList) => {
     
-    let itemsFromServer = await axios.get('http://localhost:8081/items');
+    let itemsFromServer = await axios.get(ApiUrl + '/items');
     
     
     setItemList(itemsFromServer.data);
@@ -42,7 +46,7 @@ const handleAddItem = (setCreateItemOpen) => {
 
 const handleItemCreate = async(setItemCreated, createItem_name, createItem_description, createItem_quantity, userid) => {
     console.log('Item Creation Descripion', createItem_description);
-    let itemCreated = await axios.post('http://localhost:8081/newItem',{
+    let itemCreated = await axios.post(ApiUrl + '/newItem',{
             user_id:userid,
             item_name:createItem_name,
             description:createItem_description,
@@ -78,7 +82,7 @@ const clearDelete = (setDeleteDialog) => {
 }
 
 const handleDeleteDialog = async(deleteId, setSuccessfullDelete, setItemList, setDeleteDialog ) => {
-    let deletedElement = await axios.delete(`http://localhost:8081/deleteItem/${deleteId}`);
+    let deletedElement = await axios.delete(ApiUrl + `/deleteItem/${deleteId}`);
     
     if(deletedElement.status === 204){
         console.log('SUCCESFUL DELETE RESPONSE');
@@ -106,7 +110,7 @@ const handleUpdate = async(setEditModal, setInfoModal) => {
 const handleUpdateSubmit = async(updateid, update_item_name, update_description, update_quantity, setSuccessfulUpdate) => {
     
 
-    let updateResult = await axios.patch(`http://localhost:8081/updateItem/${updateid}`, {
+    let updateResult = await axios.patch( ApiUrl + `/updateItem/${updateid}`, {
         item_name:update_item_name,
         description:update_description,
         quantity:update_quantity

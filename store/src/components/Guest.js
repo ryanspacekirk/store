@@ -1,6 +1,7 @@
 import { Box, Typography, Modal, Container, Stack, TextField, Grid } from '@mui/material';
 
 import React, { useEffect, useState, useRef} from 'react';
+import config from '../config'
 
 import { Context } from '../App.js';
 
@@ -8,11 +9,14 @@ import Item from './Item.js';
 
 import axios from 'axios';
 
+const ApiUrl = config[process.env.REACT_APP_NODE_ENV || "development"].apiUrl;
+
+
 
 
 const itemsPull = async(setItemList) => {
     
-    let itemsFromServer = await axios.get('http://localhost:8081/items');    
+    let itemsFromServer = await axios.get(ApiUrl + '/items');    
     setItemList(itemsFromServer.data);
 
 

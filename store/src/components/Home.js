@@ -6,7 +6,8 @@ import Guest from "./Guest";
 import LogIn from "./modals/LogIn.js";
 import axios from 'axios';
 
-
+import config from '../config'
+const ApiUrl = config[process.env.REACT_APP_NODE_ENV || "development"].apiUrl;
 
 const handleLogin = (setLoginModalOpen) => {
     setLoginModalOpen(true);
@@ -33,7 +34,7 @@ const handleAccountSubmit = async (accountFirstName, accountLastName, accountUse
 
 
 const accountCreation = async(accountFirstName, accountLastName, accountUsername, accountPassword) => {
-    let accountCreationResponse = await axios.post('http://localhost:8081/createAccount', {
+    let accountCreationResponse = await axios.post(ApiUrl + '/createAccount', {
         first_name:accountFirstName,
         last_name:accountLastName,
         username:accountUsername,
