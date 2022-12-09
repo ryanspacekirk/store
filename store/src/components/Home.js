@@ -148,6 +148,32 @@ const Home = () => {
 
                     </Stack>
 
+                    
+
+
+
+                    </Box>
+
+                </Modal>
+
+
+                <Modal
+                    open={createSucces}
+                    onClose={handleCloseAccount}
+                >
+                    <Box sx={loginStyle}>
+                    <Typography variant="h6">
+                        Create an account below
+                    </Typography>
+                    <Stack justifyContent="center" spacing={2}>
+                        <TextField inputProps={{readOnly:true}} id="accountFirstName" variant="outlined" label="First Name" value={accountFirstName}/>
+                        <TextField inputProps={{readOnly:true}} id="accountLastName" variant="outlined" label="Last Name" value={accountLastName} />
+                        <TextField inputProps={{readOnly:true}} id="accountUsername" variant="outlined" label="Username" value={accountUsername}  />
+                        <TextField inputProps={{readOnly:true}} id="accountPassword" variant="outlined" label="Password" value={accountPassword} />
+                        
+
+                    </Stack>
+
                     {createSucces ? 
 
                     <Box>
