@@ -67,7 +67,7 @@ const checkForMatch = (clicked_userid, loggedIn_userid, setValidMatch) => {
     
 }
 
-const handleDelete =  (setDeleteDialog, deleteId, setSuccessfullDelete) => {
+const handleDelete =  (setDeleteDialog) => {
     setDeleteDialog(true);
     
     
@@ -77,15 +77,24 @@ const clearDelete = (setDeleteDialog) => {
     setDeleteDialog(false);
 }
 
-const handleDeleteDialog = async(deleteId, setSuccessfullDelete ) => {
+const handleDeleteDialog = async(deleteId, setSuccessfullDelete, setItemList, setDeleteDialog ) => {
     let deletedElement = await axios.delete(`http://localhost:8081/deleteItem/${deleteId}`);
     
-    if(deletedElement.status == 204){
+    if(deletedElement.status === 204){
+        console.log('SUCCESFUL DELETE RESPONSE');
+        deleteCleanUp(setItemList, setDeleteDialog);
         
-        setSuccessfullDelete(true);
+        // setSuccessfullDelete(true);
     }
     
     
+}
+
+const deleteCleanUp = (setItemList, setDeleteDialog) => {
+    itemsPull(setItemList);
+    setDeleteDialog(false);
+
+
 }
 
 const handleUpdate = async(setEditModal, setInfoModal) => {
@@ -126,7 +135,7 @@ const InventoryManager = () => {
 
     const navigateHome = () => {
         navigate('/');
-       
+        
     
     }
     
@@ -169,7 +178,10 @@ const InventoryManager = () => {
     let [succesfullDelete, setSuccessfullDelete] = useState(false);
     let [deleteDialog, setDeleteDialog] = useState(false);
 
-    const handleDeleteDialogClose = () => {setDeleteDialog(false)}
+    const handleDeleteDialogClose = () => {
+        setDeleteDialog(false);
+        setSuccessfullDelete(true);
+    }
 
     //logic and state to handle an update to the db
     let [viewEditModal, setViewEditModal] = useState(false);
@@ -180,7 +192,7 @@ const InventoryManager = () => {
 
     const handleEditCLose = () => {
         setViewEditModal(false);
-        setSuccessfullDelete(false);
+        //setSuccessfullDelete(false);
 
     }
 
@@ -191,10 +203,11 @@ const InventoryManager = () => {
     }, [succsessful_update])
 
     useEffect(() => {
-        
+
+        //After a succesfull delete
+        //-Need to repull the device list from the server to reflect change
         itemsPull(setItemList);
-        setDisplayCardInfo(false);
-        setDeleteDialog(false);
+        
 
 
     }, [succesfullDelete])
@@ -239,6 +252,9 @@ const InventoryManager = () => {
     }, [itemCreated]);
 
     useEffect(() => {
+        setDisplayCardInfo(false);
+        setDeleteDialog(false);
+        setViewEditModal(false);
         setSuccessfulUpdate(false);
         //setListView(listView);
         
@@ -436,7 +452,7 @@ const InventoryManager = () => {
 
                             </DialogContent>
                             <DialogActions>
-                                <Button onClick={(e) => handleDeleteDialog(clickedItem.id, setSuccessfullDelete)}>DELETE</Button>
+                                <Button onClick={(e) => handleDeleteDialog(clickedItem.id, setSuccessfullDelete, setItemList, setDeleteDialog)}>DELETE</Button>
                                 <Button onClick={(e) => clearDelete(setDeleteDialog)}>GO BACK</Button>
                             </DialogActions>
                             

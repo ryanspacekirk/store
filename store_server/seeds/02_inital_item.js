@@ -20,7 +20,7 @@ exports.seed = async function(knex) {
 
     { 
       user_id: 1,
-      item_name: 'The Reptile Room',
+      item_name: 'The Wide Window',
       description: "The Wide Window is the third novel of the children's book series A Series of Unfortunate Events by Lemony Snicket. In this novel, the Baudelaire orphans live with their aunt Josephine, who is seemingly scared of everything. The book was published on February 25, 2000 by HarperCollins and illustrated by Brett Helquist.", 
       quantity: Math.floor(Math.random() * 10) + 1 },
 
