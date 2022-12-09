@@ -1,15 +1,11 @@
-FROM node:alpine
+FROM node:alpine 
 
-RUN mkdir -p /src/app
+WORKDIR /app
 
-WORKDIR /src/app
+COPY . /app
+RUN npm install -g nodemon@2.0.15 &&\
+    npm install
 
-COPY . /src/app
-
-RUN npm install -g nodemon@2.0.15
-
-RUN npm install
-
-EXPOSE 8081
+EXPOSE 8082
 
 CMD ["npm", "start"]
