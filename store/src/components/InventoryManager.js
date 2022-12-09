@@ -369,27 +369,40 @@ const InventoryManager = () => {
 
                     </Stack>
 
+                    
+
+                    </Box>
+
+                </Modal>
+
+                <Modal
+                    open={itemCreated}
+                    onClose={handleCloseCreateItem}
+                >
+                    <Box sx={loginStyle}>
+                    <Typography variant="h6">
+                        Create a new item below
+                    </Typography>
+                    <Stack justifyContent="center" spacing={2}>
+                        <TextField inputProps={{readOnly:true}} id="createItem_name" variant="outlined" label="Item Name" value={createItem_name} />
+                        <TextField inputProps={{readOnly:true}} id="createItem_description" variant="outlined" label="Item Description" value={createItem_description} />
+                        <TextField inputProps={{readOnly:true}} id="cretateItem_quantity" variant="outlined" label="Quantity" value={createItem_quantity} />
+                        
+
+                    </Stack>
+
                     {itemCreated ?
                         <Box>
-                            <Typography variant="h6">
-
-                                Item Insertion status: Succes
-                            </Typography>
+                            
 
                             <Alert severity="success"> Item Was succesfully added. You can close this windownow</Alert>
                         </Box>
                         :
                         <Typography variant="h6">
 
-                            Item creation status: Failure
+                           
                         </Typography>
                     }
-                
-                    
-
-                    
-
-
 
                     </Box>
 
