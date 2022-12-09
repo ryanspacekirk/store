@@ -1,12 +1,11 @@
 {
   "name": "store_server",
   "version": "1.0.0",
-  "description": "z prefix crud app",
+  "description": "",
   "main": "./server.js",
   "scripts": {
-    "start": "knex migrate:latest && knex seed:run && node ./server.js",
-    "start:dev": "export NODE_ENV=development && knex migrate:latest && knex seed:run && nodemon --watch ./ ./src/index.js",
-    
+    "start": "knex migrate:latest && knex seed:run && node ./src/index.js",
+    "start:dev": "export NODE_ENV=development && knex migrate:latest && knex seed:run && nodemon --watch ./ ./src/index.js"
   },
   "author": "Ryan Kirk",
   "license": "ISC",
