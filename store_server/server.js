@@ -66,6 +66,7 @@ app.get('/login', async(req, res) => {//Called When a user tries to log in.
             }
             else{//incorrect password
                 res.status(400).send('');
+                
 
             }
 
@@ -169,6 +170,7 @@ app.get('/items', async(req, res) => {
         res.status(200).send(itemsList);
 
     } catch (e){
+        console.log('items error:',e)
         res.status(400).send('');
 
     }
