@@ -17,10 +17,13 @@ exports.up = function(knex) {
         .createTable('item', table => {
             table.increments('id');
             table.integer('user_id');
-            table.foreign('user_id').references('account.id');
+            table.foreign('user_id').references('account.id')
+            .onDelete('CASCADE')
+            .onUpdate('CASCADE');
             table.string('item_name', 50);
             table.string('description', 1000);
             table.integer('quantity');
+            
 
         })
 
