@@ -4,7 +4,7 @@ const express = require('express');
 const app = express();
 const router = express.Router()
 const cors = require('cors');
-const port = 8081;
+const port = process.env.PORT || 8081;
 const env = process.env.NODE_ENV || 'development'
 const knex = require('knex')(require('./knexfile')["development"]);
 const bcrypt = require("bcrypt");
@@ -61,7 +61,7 @@ app.get('/login', async(req, res) => {//Called When a user tries to log in.
 
             }
             else{//incorrect password
-                res.status(200).send('');
+                res.status(400).send('');
 
             }
 
@@ -81,6 +81,7 @@ app.get('/login', async(req, res) => {//Called When a user tries to log in.
         // console.log('User account:', userAccount);
 
     } catch (e) {
+        res.status(400).send('');
 
     }
 
@@ -139,12 +140,13 @@ app.post('/createAccount', async(req, res) => {
 
         }
         
-
+        res.status(200).send(createdAccount);
     } catch(e){
+        res.status(400).send('');
 
     }
 
-    res.status(200).send(createdAccount);
+    
 
 
 });//-----------------------------------------------------------------------------------------------------------------------
@@ -160,11 +162,13 @@ app.get('/items', async(req, res) => {
     try{
         itemsList = await knex.from('item').select('*');
         // console.log('Items List:', itemsList);
+        res.status(200).send(itemsList);
 
     } catch (e){
+        res.status(400).send('');
 
     }
-    res.status(200).send(itemsList);
+    
     
 });//-----------------------------------------------------------------------------------------------------------------------
 
@@ -200,16 +204,17 @@ app.post('/newItem', async(req, res) => {
         
         
         
-        
+        res.status(200).send(newItem);
 
     } catch (e){
         newItem='';
         console.log('Problem inserting new item:');
         console.log(e);
+        res.status(400).send('');
 
     }
 
-    res.status(200).send(newItem);
+    
     
 });//-----------------------------------------------------------------------------------------------------------------------
 
