@@ -112,6 +112,7 @@ const Home = () => {
     useEffect(() => {
         if(verifiedUser){
             navigate('/InventoryManager');
+            
         }
 
     }, [verifiedUser]);
@@ -208,7 +209,15 @@ const Home = () => {
 
 
 
-                <Box >
+                <Box sx={{
+                    p : 2,
+                    backgroundColor: 'primary.main',
+                    '&:hover': {
+                        backgroundColor:'primary.dark',
+                        
+
+                    },
+                }}>
                     <Stack justifyContent="center" direction="row" spacing={2}>
                         <Button onClick={(e) => handleLogin(setLoginModalOpen)} variant="contained"> LOGIN </Button>
                         <Button onClick={(e) => handleGuest(setGuestUser)} variant="contained"> GUEST </Button>
@@ -219,21 +228,7 @@ const Home = () => {
 
                 </Box>
 
-                <Box >
-                    
-                    {verifiedUser ? <Typography variant="h4"> User Is Validated</Typography>
-                    :
-                    <Typography variant="h4"> User Is NOT Validated</Typography>}
-
-                    <Typography variant="h4">
-                        Validated user {loggedInUser.first_name}
-                    </Typography>
-                    
-                    
-                    
-                    
-
-                </Box>
+                
                 
             </Paper>
 

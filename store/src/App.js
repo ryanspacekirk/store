@@ -15,8 +15,9 @@ function App() {
   return (
     <div className="App">
       <Context.Provider value={{loggedInUser, setLoggedInUser}}>
-        <Header />
+        
       <BrowserRouter>
+        <Header />
         <Routes>
           <Route path="/" element={<Home/>} />
           <Route path='/InventoryManager' element={<InventoryManager />} />

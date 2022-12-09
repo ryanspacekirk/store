@@ -1,12 +1,15 @@
 import { Box, Typography, Button, RadioGroup, FormControl, FormLabel, FormControlLabel, Radio, Modal, Container, Stack, TextField, Alert, Grid, Dialog, DialogContentText, DialogTitle, DialogContent, DialogActions } from '@mui/material';
 
 import React, {useContext, useEffect, useState, useRef} from 'react';
+import { NavLink, useNavigate, Navigate } from "react-router-dom";
 
 import { Context } from '../App.js';
 
 import Item from './Item.js';
 import MyItem from './MyItem.js';
 import axios from 'axios';
+
+
 
 
 
@@ -117,7 +120,14 @@ const loginStyle = {
 
 
 const InventoryManager = () => {
+    const navigate = useNavigate();
     const isMounted = useRef(false);
+
+    const navigateHome = () => {
+        navigate('/');
+        console.log('Home clicked');
+    
+    }
     
 
     
@@ -502,7 +512,21 @@ const InventoryManager = () => {
     }
     else{
         return(
-            <p> Please log back in</p>
+            <Container>
+                <Box>
+                    <Typography variant='h4'>
+                        User has been logged out!
+                    </Typography>
+                    <Typography variant='h4'>
+                        Please close the web page or return home.
+                    </Typography>
+
+                </Box>
+                <Box>
+                    <Button onClick={navigateHome} variant='contained'>HOME</Button>
+                    
+                </Box>
+            </Container>
         )
 
     }
