@@ -132,7 +132,7 @@ const Home = () => {
                         STORE
                     </Typography>
                     <Typography variant="h4">
-                        Welcome to the store application.
+                        Welcome to the STORE, the Storage Table Of Rapid Efficiency.
                     </Typography>
                     <Typography variant="h6">
                         If you are a registered user, please click the log in button below.

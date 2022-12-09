@@ -9,7 +9,7 @@ const handleLoginSubmit = async(setVerifiedUser, username, password, setLoginMod
     if(await validLogin(username, password, setLoggedInUser)){//succesful login
         setVerifiedUser(true);
         setLoginModalOpen(true);
-        console.log('Modal function: ', logInSet)
+        
         logInSet(false);
         
         navigate('/InventoryManager');
@@ -49,7 +49,7 @@ const loginStyle = {
 }
 
 const LogIn = ({ logInSet }) => {
-    console.log('set log in modal fucntion prop:', logInSet)
+    
     const navigate = useNavigate();
     const { loggedInUser, setLoggedInUser } = useContext(Context);
     let [loginModalOpen, setLoginModalOpen] = useState(true);
