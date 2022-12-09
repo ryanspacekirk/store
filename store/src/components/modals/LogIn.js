@@ -1,11 +1,12 @@
 import { Paper, Container, Box, Typography, Button, Stack, Modal, TextField, Alert } from "@mui/material";
-import { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { NavLink, useNavigate, Navigate, useSearchParams } from "react-router-dom";
 
 import { Context } from '../../App.js';
 import axios from 'axios';
 
-const handleLoginSubmit = async(setVerifiedUser, username, password, setLoginModalOpen, setLoggedInUser, navigate, logInSet) => {    
+const handleLoginSubmit = async(setVerifiedUser, username, password, setLoginModalOpen, setLoggedInUser, navigate, logInSet, setFailedLogin) => {    
+    console.log('LOGIN SUBMIT')
     if(await validLogin(username, password, setLoggedInUser)){//succesful login
         setVerifiedUser(true);
         setLoginModalOpen(true);
@@ -18,16 +19,20 @@ const handleLoginSubmit = async(setVerifiedUser, username, password, setLoginMod
     }
     else{//bad login attempt
         setVerifiedUser(false);
+        setFailedLogin(true);
     }
 }
 
 const validLogin = async(usernameInput, passwordInput, setLoggedInUser) => {
+    console.log('valid log in called');
+    console.log('username input:', usernameInput);
     let usernameResponse = await axios.get('http://localhost:8081/login',  {
         params: {
             username: usernameInput,
             password: passwordInput
         }
     });
+    console.log('usernameResponse: ', usernameResponse);
     
     if(usernameResponse.data.length !== 0 ){// A user account exits!
         setLoggedInUser(usernameResponse.data[0]);
@@ -61,7 +66,7 @@ const LogIn = ({ logInSet }) => {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [verifiedUser, setVerifiedUser] = useState(false);
-    const [guestUser, setGuestUser] = useState(false);
+    const [failedLogin, setFailedLogin] = useState(false);
 
 
     return (
@@ -76,9 +81,20 @@ const LogIn = ({ logInSet }) => {
             <Stack justifyContent="center" spacing={2}>
                 <TextField onChange={(e) => {setUsername(e.target.value)}} id="username" variant="outlined" label="Username" />
                 <TextField onChange={(e) => {setPassword(e.target.value)}} id="password" variant="outlined" label="Password" />
-                <Button onClick={(e) => handleLoginSubmit(setVerifiedUser, username, password, setLoginModalOpen, setLoggedInUser, navigate, logInSet)} variant="contained" >SUBMIT</Button>
+                <Button onClick={(e) => handleLoginSubmit(setVerifiedUser, username, password, setLoginModalOpen, setLoggedInUser, navigate, logInSet, setFailedLogin)} variant="contained" >SUBMIT</Button>
 
             </Stack>
+
+            {failedLogin ?
+                <Box>
+                    <Alert severity="warning"> Account Could not be verified</Alert>
+
+                </Box>
+            
+                :
+                <React.Fragment/>
+                
+            }
 
 
             </Box>
@@ -90,3 +106,4 @@ const LogIn = ({ logInSet }) => {
 }
 
 export default LogIn;
+

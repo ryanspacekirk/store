@@ -41,6 +41,7 @@ const handleAddItem = (setCreateItemOpen) => {
 }
 
 const handleItemCreate = async(setItemCreated, createItem_name, createItem_description, createItem_quantity, userid) => {
+    console.log('Item Creation Descripion', createItem_description);
     let itemCreated = await axios.post('http://localhost:8081/newItem',{
             user_id:userid,
             item_name:createItem_name,
@@ -125,7 +126,7 @@ const InventoryManager = () => {
 
     const navigateHome = () => {
         navigate('/');
-        console.log('Home clicked');
+       
     
     }
     
@@ -199,7 +200,7 @@ const InventoryManager = () => {
     }, [succesfullDelete])
 
     const handleInfoClose = () => {//Gets called after the delte button is pressed. Need to update item list at this point
-        itemsPull(setItemList);
+        //itemsPull(setItemList);
         setDisplayCardInfo(false);
         
     }
@@ -239,6 +240,7 @@ const InventoryManager = () => {
 
     useEffect(() => {
         setSuccessfulUpdate(false);
+        //setListView(listView);
         
         let tempList = [];
        

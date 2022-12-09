@@ -159,7 +159,7 @@ app.get('/items', async(req, res) => {
     
     try{
         itemsList = await knex.from('item').select('*');
-        console.log('Items List:', itemsList);
+        // console.log('Items List:', itemsList);
 
     } catch (e){
 
@@ -178,6 +178,7 @@ app.post('/newItem', async(req, res) => {
     console.log('New Item Description:', req.body.description);
     console.log('New Item Quantity:', req.body.quantity);
     let newItem;
+    let itemToInsert = {};
     
     try{
         if(req.body.item_name === ''){//Dont insert without an item name
@@ -185,13 +186,15 @@ app.post('/newItem', async(req, res) => {
 
         }
         else{
-            newItem = await knex('item').insert({
-                user_id:req.body.user_id,
-                item_name:req.body.item_name,
-                description:req.body.item_description,
-                quantity:req.body.quantity
-    
-            });
+            itemToInsert = {
+                'user_id': req.body.user_id,
+                'item_name': req.body.item_name,
+                'description': req.body.description ,
+                'quantity': req.body.quantity
+
+            }
+            console.log('Item to insert:', itemToInsert);
+            newItem = await knex('item').insert(itemToInsert);
 
         }
         

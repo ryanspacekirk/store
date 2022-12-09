@@ -19,15 +19,7 @@ const handleCreateAccount = (setCreateModalOpen) => {
     setCreateModalOpen(true);
 }
 
-const handleLoginSubmit = async(setVerifiedUser, username, password, setLoginModalOpen, setLoggedInUser) => {    
-    if(await validLogin(username, password, setLoggedInUser)){//succesful login
-        setVerifiedUser(true);
-        setLoginModalOpen(false);
-    }
-    else{//bad login attempt
-        setVerifiedUser(false);
-    }
-}
+
 
 const handleAccountSubmit = async (accountFirstName, accountLastName, accountUsername, accountPassword, setCreateSuccess) => {
     if(await accountCreation(accountFirstName, accountLastName, accountUsername, accountPassword)){//account creation was a success
@@ -38,22 +30,7 @@ const handleAccountSubmit = async (accountFirstName, accountLastName, accountUse
     }
 }
 
-const validLogin = async(usernameInput, passwordInput, setLoggedInUser) => {
-    let usernameResponse = await axios.get('http://localhost:8081/login',  {
-        params: {
-            username: usernameInput,
-            password: passwordInput
-        }
-    });
-    
-    if(usernameResponse.data.length !== 0 ){// A user account exits!
-        setLoggedInUser(usernameResponse.data[0]);
-        return true;
-    }
-    else {
-        return false;
-    }
-}
+
 
 const accountCreation = async(accountFirstName, accountLastName, accountUsername, accountPassword) => {
     let accountCreationResponse = await axios.post('http://localhost:8081/createAccount', {
@@ -177,7 +154,7 @@ const Home = () => {
 
                         <Typography variant="h6">
 
-                            Account creation status: Succes
+                            
                         </Typography>
 
                         <Alert severity="success"> Account Was succesfully created. You can log in now</Alert>
@@ -185,7 +162,7 @@ const Home = () => {
                     :
                     <Typography variant="h6">
 
-                        Account creation status: Failure
+                        
                     </Typography>
                     }
 
